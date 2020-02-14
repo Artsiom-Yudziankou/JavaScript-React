@@ -4,7 +4,7 @@ import "./index.css";
 
 function Square(props) {
   return (
-    <button className="square" onClick={props.onClick}>
+    <button className="square" onClick={props.onClick} name={props.name}>
       {props.value}
     </button>
   );
@@ -16,6 +16,7 @@ class Board extends React.Component {
       <Square
         value={this.props.squares[i]}
         onClick={() => this.props.onClick(i)}
+        name={this.props.names[i]}
       />
     );
   }
@@ -63,12 +64,7 @@ class Game extends React.Component {
       ],
       stepNumber: 0,
       xIsNext: true,
-      cells: [
-        {
-          cells: Array(9).fill(null)
-        }
-      ],
-      cell: null
+      names: Array("A1", "B1", "C1", "A2", "B2", "C2", "A3", "B3", "C3")
     };
   }
 
@@ -90,13 +86,7 @@ class Game extends React.Component {
         }
       ]),
       stepNumber: history.length,
-      xIsNext: !this.state.xIsNext,
-      cells: [
-        {
-          cells: ["A1", "B1", "C1", "A2", "B2", "C2", "A3", "B3", "C3"]
-        }
-      ],
-      cell: cells[i]
+      xIsNext: !this.state.xIsNext
     });
   }
 
@@ -108,13 +98,17 @@ class Game extends React.Component {
   }
 
   render() {
+    console.log("render()");
     const history = this.state.history;
     const current = history[this.state.stepNumber];
+    const names = this.state.names;
+
+    console.log("current = ", current);
+
     const winner = calculateWinner(current.squares);
-    const cell = this.state.cell;
 
     const moves = history.map((step, move) => {
-      const desc = move ? "Go to the step #" + move + cell : "Go to the begin";
+      const desc = move ? "Go to the step #" + move + " " : "Go to the begin";
       return (
         <li key={move}>
           <button onClick={() => this.jumpTo(move)}>{desc}</button>
@@ -133,7 +127,11 @@ class Game extends React.Component {
     return (
       <div className="game">
         <div className="game-board">
-          <Board squares={current.squares} onClick={i => this.handleClick(i)} />
+          <Board
+            squares={current.squares}
+            names={names}
+            onClick={i => this.handleClick(i)}
+          />
         </div>
         <div className="game-info">
           <div>{status}</div>
